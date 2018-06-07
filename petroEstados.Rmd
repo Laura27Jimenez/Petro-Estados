@@ -1,0 +1,714 @@
+---
+title: "Violencia Politica en Estados Petroleros"
+author: Laura Jimenez Ruiz 
+date:  Abril de 2018
+output: 
+  html_document: 
+    fig_caption: yes
+    fig_height: 10
+    fig_width: 12
+    theme: journal
+    toc: no
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message=FALSE, warning=FALSE)
+library("readxl")
+library("dplyr"); library("tidyr")
+library("stringr")
+library("ggplot2")
+library("gtable")
+library("grid")
+library("ggthemes")
+library("extrafont")
+library("scales")
+library("reshape2")
+library("arulesViz");library("arules")
+library(GGally)
+library(bda)
+library(vcd)
+library(car)
+options(scipen=999) # Disable scientific notation
+Sys.setlocale("LC_ALL", "en_US.UTF-8")
+```
+
+```{r data, include=FALSE}
+pD <- read.csv("Data/pDa.csv", sep = ";")
+pD$PolTerrorUSDept<-as.numeric(pD$PolTerrorUSDept)
+pD$Polity2Dest<-as.numeric(pD$Polity2Dest)
+pD$polity2PetroState<-as.numeric(pD$polity2PetroState)
+
+
+```
+
+
+# {.tabset}
+
+##VIOLENCIA POLITICA VS TODOS  
+
+> KENDALL
+
+```{r Kendall, include= TRUE}
+corOilRentsDep <- cor(pD$PolTerrorUSDept,pD$OilRentsDep,method = "kendall",use="complete.obs")
+corGDPpc2010 <- cor(pD$PolTerrorUSDept,pD$GDPpc2010,
+              method = "kendall",use="complete.obs")        
+corExpDepDest <- cor(pD$PolTerrorUSDept,pD$ExpDepDest,
+              method = "kendall",use="complete.obs")
+corPolity2Dest <- cor(pD$PolTerrorUSDept,pD$Polity2Dest,
+              method = "kendall",use="complete.obs")
+corPolity2PetroState <- cor(pD$PolTerrorUSDept,pD$polity2PetroState,
+              method = "kendall",use="complete.obs")
+corReserves <- cor(pD$PolTerrorUSDept,pD$Reserves,
+              method = "kendall",use="complete.obs")
+corMilex <- cor(pD$PolTerrorUSDept,pD$Milex,
+              method = "kendall",use="complete.obs")
+corForeignInvest <- cor(pD$PolTerrorUSDept,pD$ForeignInvest,
+              method = "kendall",use="complete.obs")
+corPredEthnic <- cor(pD$PolTerrorUSDept,pD$PredEthnic,
+              method = "kendall",use="complete.obs")
+corOilprice<- cor(pD$PolTerrorUSDept,pD$OilPrice,
+              method = "kendall",use="complete.obs")
+corNOC <- cor(pD$PolTerrorUSDept, pD$NOC, method = "kendall", use = "complete.obs")
+corIOCS <- cor(pD$PolTerrorUSDept, pD$IOC, method = "kendall", use = "complete.obs")
+corCPI <- cor(pD$PolTerrorUSDept, pD$CPI, method = "kendall", use = "complete.obs")
+
+paste0("GDP per capita a precios constantes: ",round(corGDPpc2010,2))
+paste0("Regimen del petroestado: ",round(corPolity2PetroState,2))
+paste0("Dependencia economica: ",round(corExpDepDest,2))
+paste0("controlNocs: ", round(corNOC, 2))
+paste0("Dependecia en Rentas: ",round(corOilRentsDep,2)) 
+paste0("Diversidad etnica: ",round(corPredEthnic,2))
+paste0("Inversion Extranjera: ",round(corForeignInvest,2))
+paste0("Milex: ",round(corMilex,2))
+paste0("Regimen de los destinos economicos: ",round(corPolity2Dest,2))
+paste0("Reservas: ",round(corReserves,2))
+paste0("Precios del petroleo: ", round(corOilprice,2))
+paste0("controlIOCS: ", round(corIOCS, 2))
+paste0("Corrupcion: ", round(corCPI, 2))
+
+```
+
+
+## TODO VS TODO 
+
+> GDP 
+
+```{r Kendall1, include= TRUE}
+corOilRentsDep <- cor(pD$GDPpc2010,pD$OilRentsDep,method = "kendall",use="complete.obs")
+corPTS <- cor(pD$GDPpc2010,pD$PolTerrorUSDept,
+              method = "kendall",use="complete.obs")        
+corExpDepDest <- cor(pD$GDPpc2010,pD$ExpDepDest,
+              method = "kendall",use="complete.obs")
+corPolity2Dest <- cor(pD$GDPpc2010,pD$Polity2Dest,
+              method = "kendall",use="complete.obs")
+corPolity2PetroState <- cor(pD$GDPpc2010,pD$polity2PetroState,
+              method = "kendall",use="complete.obs")
+corReserves <- cor(pD$GDPpc2010,pD$Reserves,
+              method = "kendall",use="complete.obs")
+corMilex <- cor(pD$GDPpc2010,pD$Milex,
+              method = "pearson",use="complete.obs")
+corForeignInvest <- cor(pD$GDPpc2010,pD$ForeignInvest,
+              method = "pearson",use="complete.obs")
+corPredEthnic <- cor(pD$GDPpc2010,pD$PredEthnic,
+              method = "kendall",use="complete.obs")
+corOilprice<- cor(pD$GDPpc2010,pD$OilPrice,
+              method = "kendall",use="complete.obs")
+corNOC <- cor(pD$GDPpc2010, pD$NOC, method = "kendall", use = "complete.obs")
+corIOCS <- cor(pD$GDPpc2010, pD$IOC, method = "kendall", use = "complete.obs")
+corCPI <- cor(pD$GDPpc2010, pD$CPI, method = "kendall", use = "complete.obs")
+
+
+paste0("Violencia Politica: ",round(corPTS,2))
+paste0("Corrupcion: ", round(corCPI, 2))
+paste0("Regimen del petroestado: ",round(corPolity2PetroState,2))
+paste0("controlNocs: ", round(corNOC, 2))
+paste0("Dependencia economica: ",round(corExpDepDest,2))
+paste0("Reservas: ",round(corReserves,2))
+paste0("Dependecia en Rentas: ",round(corOilRentsDep,2)) 
+paste0("Diversidad etnica: ",round(corPredEthnic,2))
+paste0("Inversion Extranjera: ",round(corForeignInvest,2))
+paste0("Milex: ",round(corMilex,2))
+paste0("Regimen de los destinos economicos: ",round(corPolity2Dest,2))
+paste0("Precios del petroleo: ", round(corOilprice,2))
+paste0("controlIOCS: ", round(corIOCS, 2))
+
+```
+
+
+> REGIMEN PETRO-ESTADOS
+
+```{r Kendall3, include= TRUE}
+corOilRentsDep3 <- cor(pD$polity2PetroState,pD$OilRentsDep,method = "kendall",use="complete.obs")
+corGDPpc20103 <- cor(pD$polity2PetroState,pD$GDPpc2010,
+              method = "kendall",use="complete.obs")        
+corExpDepDest3 <- cor(pD$polity2PetroState,pD$ExpDepDest,
+              method = "kendall",use="complete.obs")
+corPolity2Dest3 <- cor(pD$polity2PetroState,pD$Polity2Dest,
+              method = "kendall",use="complete.obs")
+corPolity2PetroState3 <- cor(pD$polity2PetroState,pD$PolTerrorUSDept,
+              method = "kendall",use="complete.obs")
+corReserves3 <- cor(pD$polity2PetroState,pD$Reserves,
+              method = "kendall",use="complete.obs")
+corMilex3 <- cor(pD$polity2PetroState,pD$Milex,
+              method = "kendall",use="complete.obs")
+corForeignInvest3 <- cor(pD$polity2PetroState,pD$ForeignInvest,
+              method = "kendall",use="complete.obs")
+corPredEthnic3 <- cor(pD$polity2PetroState,pD$PredEthnic,
+              method = "kendall",use="complete.obs")
+corOilprice3 <- cor(pD$polity2PetroState,pD$OilPrice,
+              method = "kendall",use="complete.obs")
+corNOC3 <- cor(pD$polity2PetroState, pD$NOC, method = "kendall", use = "complete.obs")
+corIOCS3 <- cor(pD$polity2PetroState, pD$IOC, method = "kendall", use = "complete.obs")
+
+paste0("GDP per capita a precios constantes: ",round(corGDPpc20103,2))
+paste0("Violencia Politica: ",round(corPolity2PetroState3,2))
+paste0("Milex: ",round(corMilex3,2))
+paste0("controlNocs: ", round(corNOC3, 2))
+paste0("controlIOCS: ", round(corIOCS3, 2))
+paste0("Dependecia en Rentas: ",round(corOilRentsDep3,2)) 
+paste0("Dependencia economica: ",round(corExpDepDest3,2))
+paste0("Diversidad etnica: ",round(corPredEthnic3,2))
+paste0("Inversion Extranjera: ",round(corForeignInvest3,2))
+paste0("Regimen de los destinos economicos: ",round(corPolity2Dest3,2))
+paste0("Reservas: ",round(corReserves3,2))
+paste0("Precios del petroleo: ", round(corOilprice3,2))
+
+```
+
+> DEPENDENCIA ECONOMICA 
+
+```{r Kendall4, include= TRUE}
+corOilRentsDep <- cor(pD$ExpDepDest,pD$OilRentsDep,method = "kendall",use="complete.obs")
+corGDPpc2010 <- cor(pD$ExpDepDest,pD$GDPpc2010,
+              method = "kendall",use="complete.obs")        
+corExpDepDest <- cor(pD$ExpDepDest,pD$PolTerrorUSDept,
+              method = "kendall",use="complete.obs")
+corPolity2Dest <- cor(pD$ExpDepDest,pD$Polity2Dest,
+              method = "kendall",use="complete.obs")
+corPolity2PetroState <- cor(pD$ExpDepDest,pD$polity2PetroState,
+              method = "kendall",use="complete.obs")
+corReserves <- cor(pD$ExpDepDest,pD$Reserves,
+              method = "kendall",use="complete.obs")
+corMilex <- cor(pD$ExpDepDest,pD$Milex,
+              method = "kendall",use="complete.obs")
+corForeignInvest <- cor(pD$ExpDepDest,pD$ForeignInvest,
+              method = "kendall",use="complete.obs")
+corPredEthnic <- cor(pD$ExpDepDest,pD$PredEthnic,
+              method = "kendall",use="complete.obs")
+corOilprice<- cor(pD$ExpDepDest,pD$OilPrice,
+              method = "kendall",use="complete.obs")
+corNOC <- cor(pD$ExpDepDest, pD$NOC, method = "kendall", use = "complete.obs")
+corIOCS <- cor(pD$ExpDepDest, pD$IOC, method = "kendall", use = "complete.obs")
+
+paste0("controlIOCS: ", round(corIOCS, 2))
+paste0("controlNocs: ", round(corNOC, 2)) 
+paste0("GDP per capita a precios constantes: ",round(corGDPpc2010,2))
+paste0("Dependecia en Rentas: ",round(corOilRentsDep,2)) 
+paste0("Regimen de los destinos economicos: ",round(corPolity2Dest,2))
+paste0("Violencia Politica: ",round(corExpDepDest,2))  
+paste0("Reservas: ",round(corReserves,2))
+paste0("Regimen del petroestado: ",round(corPolity2PetroState,2))
+paste0("Diversidad etnica: ",round(corPredEthnic,2))
+paste0("Inversion Extranjera: ",round(corForeignInvest,2))
+paste0("Milex: ",round(corMilex,2))
+paste0("Regimen del petroestado: ",round(corPolity2PetroState,2))
+paste0("Precios del petroleo: ", round(corOilprice,2))
+
+```
+
+> DEPENDENCIA EN RENTAS 
+
+```{r Kendall5, include= TRUE}
+corOilRentsDep <- cor(pD$OilRentsDep,pD$PolTerrorUSDept,method = "kendall",use="complete.obs")
+corGDPpc2010 <- cor(pD$OilRentsDep,pD$GDPpc2010,
+              method = "kendall",use="complete.obs")        
+corExpDepDest <- cor(pD$OilRentsDep,pD$ExpDepDest,
+              method = "kendall",use="complete.obs")
+corPolity2Dest <- cor(pD$OilRentsDep,pD$Polity2Dest,
+              method = "kendall",use="complete.obs")
+corPolity2PetroState <- cor(pD$OilRentsDep,pD$polity2PetroState,
+              method = "kendall",use="complete.obs")
+corReserves <- cor(pD$OilRentsDep,pD$Reserves,
+              method = "kendall",use="complete.obs")
+corMilex <- cor(pD$OilRentsDep,pD$Milex,
+              method = "kendall",use="complete.obs")
+corForeignInvest <- cor(pD$OilRentsDep,pD$ForeignInvest,
+              method = "kendall",use="complete.obs")
+corPredEthnic <- cor(pD$OilRentsDep,pD$PredEthnic,
+              method = "kendall",use="complete.obs")
+corOilprice<- cor(pD$OilRentsDep,pD$OilPrice,
+              method = "kendall",use="complete.obs")
+corNOC <- cor(pD$OilRentsDep, pD$NOC, method = "kendall", use = "complete.obs")
+corIOCS <- cor(pD$OilRentsDep, pD$IOC, method = "kendall", use = "complete.obs")
+
+paste0("Dependencia economica: ",round(corExpDepDest,2))
+paste0("Regimen de los destinos economicos: ",round(corPolity2Dest,2))
+paste0("Violencia Politica: ",round(corOilRentsDep,2))
+paste0("Inversion Extranjera: ",round(corForeignInvest,2))
+paste0("Regimen del petroestado: ",round(corPolity2PetroState,2))
+paste0("Diversidad etnica: ",round(corPredEthnic,2))
+paste0("Reservas: ",round(corReserves,2))
+paste0("Precios del petroleo: ", round(corOilprice,2))
+paste0("controlIOCS: ", round(corIOCS, 2))
+paste0("controlNocs: ", round(corNOC, 2))
+paste0("GDP per capita a precios constantes: ",round(corGDPpc2010,2))
+paste0("Milex: ",round(corMilex,2))
+
+```
+
+> DIVERSIDAD ETNICA (Espurea)
+
+```{r Kendall6, include= TRUE}
+corOilRentsDep <- cor(pD$PredEthnic,pD$OilRentsDep,method = "kendall",use="complete.obs")
+corGDPpc2010 <- cor(pD$PredEthnic,pD$GDPpc2010,
+              method = "kendall",use="complete.obs")        
+corExpDepDest <- cor(pD$PredEthnic,pD$ExpDepDest,
+              method = "kendall",use="complete.obs")
+corPolity2Dest <- cor(pD$PredEthnic,pD$Polity2Dest,
+              method = "kendall",use="complete.obs")
+corPolity2PetroState <- cor(pD$PredEthnic,pD$polity2PetroState,
+              method = "kendall",use="complete.obs")
+corReserves <- cor(pD$PredEthnic,pD$Reserves,
+              method = "kendall",use="complete.obs")
+corMilex <- cor(pD$PredEthnic,pD$Milex,
+              method = "kendall",use="complete.obs")
+corForeignInvest <- cor(pD$PredEthnic,pD$ForeignInvest,
+              method = "kendall",use="complete.obs")
+corPredEthnic <- cor(pD$PredEthnic,pD$PolTerrorUSDept,
+              method = "kendall",use="complete.obs")
+corOilprice<- cor(pD$PredEthnic,pD$OilPrice,
+              method = "kendall",use="complete.obs")
+corNOC <- cor(pD$PredEthnic, pD$NOC, method = "kendall", use = "complete.obs")
+corIOCS <- cor(pD$PredEthnic, pD$IOC, method = "kendall", use = "complete.obs")
+
+
+paste0("controlNocs: ", round(corNOC, 2))
+paste0("controlIOCS: ", round(corIOCS, 2))
+paste0("Violencia Politica: ",round(corPredEthnic,2))
+paste0("GDP per capita a precios constantes: ",round(corGDPpc2010,2))
+paste0("Regimen del petroestado: ",round(corPolity2PetroState,2))
+paste0("Dependencia economica: ",round(corExpDepDest,2))
+paste0("Dependecia en Rentas: ",round(corOilRentsDep,2)) 
+paste0("Inversion Extranjera: ",round(corForeignInvest,2))
+paste0("Milex: ",round(corMilex,2))
+paste0("Regimen de los destinos economicos: ",round(corPolity2Dest,2))
+paste0("Reservas: ",round(corReserves,2))
+paste0("Precios del petroleo: ", round(corOilprice,2))
+
+
+
+```
+
+> INVERSION EXTRANEJERA
+
+```{r Kendall7, include= TRUE}
+corOilRentsDep <- cor(pD$ForeignInvest,pD$OilRentsDep,method = "kendall",use="complete.obs")
+corGDPpc2010 <- cor(pD$ForeignInvest,pD$GDPpc2010,
+              method = "pearson",use="complete.obs")        
+corExpDepDest <- cor(pD$ForeignInvest,pD$ExpDepDest,
+              method = "pearson",use="complete.obs")
+corPolity2Dest <- cor(pD$ForeignInvest,pD$Polity2Dest,
+              method = "kendall",use="complete.obs")
+corPolity2PetroState <- cor(pD$ForeignInvest,pD$polity2PetroState,
+              method = "kendall",use="complete.obs")
+corReserves <- cor(pD$ForeignInvest,pD$Reserves,
+              method = "kendall",use="complete.obs")
+corMilex <- cor(pD$ForeignInvest,pD$Milex,
+              method = "pearson",use="complete.obs")
+corPTS <- cor(pD$ForeignInvest,pD$PolTerrorUSDept,
+              method = "kendall",use="complete.obs")
+corPredEthnic <- cor(pD$ForeignInvest,pD$PredEthnic,
+              method = "kendall",use="complete.obs")
+corOilprice<- cor(pD$ForeignInvest,pD$OilPrice,
+              method = "kendall",use="complete.obs")
+corNOC <- cor(pD$ForeignInvest, pD$NOC, method = "kendall", use = "complete.obs")
+corIOCS <- cor(pD$ForeignInvest, pD$IOC, method = "kendall", use = "complete.obs")
+
+paste0("Regimen de los destinos economicos: ",round(corPolity2Dest,2))
+paste0("Dependecia en Rentas: ",round(corOilRentsDep,2)) 
+paste0("Reservas: ",round(corReserves,2))
+paste0("Dependencia economica: ",round(corExpDepDest,2))
+paste0("controlNocs: ", round(corNOC, 2))
+paste0("controlIOCS: ", round(corIOCS, 2))
+paste0("Milex: ",round(corMilex,2))
+paste0("GDP per capita a precios constantes: ",round(corGDPpc2010,2))
+paste0("Violencia Politica: ",round(corPTS,2))
+paste0("Regimen del petroestado: ",round(corPolity2PetroState,2))
+paste0("Diversidad etnica: ",round(corPredEthnic,2))
+paste0("Precios del petroleo: ", round(corOilprice,2))
+
+```
+
+> MILEX
+
+```{r Kendall8, include= TRUE}
+corOilRentsDep <- cor(pD$Milex,pD$OilRentsDep,method = "kendall",use="complete.obs")
+corGDPpc2010 <- cor(pD$Milex,pD$GDPpc2010,
+              method = "pearson",use="complete.obs")        
+corExpDepDest <- cor(pD$Milex,pD$ExpDepDest,
+              method = "kendall",use="complete.obs")
+corPolity2Dest <- cor(pD$Milex,pD$Polity2Dest,
+              method = "kendall",use="complete.obs")
+corPolity2PetroState <- cor(pD$Milex,pD$polity2PetroState,
+              method = "kendall",use="complete.obs")
+corReserves <- cor(pD$Milex,pD$Reserves,
+              method = "kendall",use="complete.obs")
+corPTS <- cor(pD$Milex,pD$PolTerrorUSDept,
+              method = "kendall",use="complete.obs")
+corForeignInvest <- cor(pD$Milex,pD$ForeignInvest,
+              method = "pearson",use="complete.obs")
+corPredEthnic <- cor(pD$Milex,pD$PredEthnic,
+              method = "kendall",use="complete.obs")
+corOilprice<- cor(pD$Milex,pD$OilPrice,
+              method = "kendall",use="complete.obs")
+corNOC <- cor(pD$Milex, pD$NOC, method = "kendall", use = "complete.obs")
+corIOCS <- cor(pD$Milex, pD$IOC, method = "kendall", use = "complete.obs")
+
+
+paste0("Regimen de los destinos economicos: ",round(corPolity2Dest,2))
+paste0("Reservas: ",round(corReserves,2))
+paste0("Regimen del petroestado: ",round(corPolity2PetroState,2))
+paste0("controlNocs: ", round(corNOC, 2))
+paste0("controlIOCS: ", round(corIOCS, 2))
+paste0("Dependecia en Rentas: ",round(corOilRentsDep,2)) 
+paste0("Inversion Extranjera: ",round(corForeignInvest,2))
+paste0("Dependencia economica: ",round(corExpDepDest,2))
+paste0("Diversidad etnica: ",round(corPredEthnic,2))
+paste0("Violencia Politica: ",round(corPTS,2))
+paste0("Precios del petroleo: ", round(corOilprice,2))
+paste0("GDP per capita a precios constantes: ",round(corGDPpc2010,2))
+
+```
+
+> REGIMEN DE LOS DESTINOS ECONOMICOS
+
+```{r Kendall9, include= TRUE}
+corOilRentsDep <- cor(pD$Polity2Dest,pD$OilRentsDep,method = "kendall",use="complete.obs")
+corGDPpc2010 <- cor(pD$Polity2Dest,pD$GDPpc2010,
+              method = "kendall",use="complete.obs")        
+corExpDepDest <- cor(pD$Polity2Dest,pD$ExpDepDest,
+              method = "kendall",use="complete.obs")
+corPolity2Dest <- cor(pD$Polity2Dest,pD$PolTerrorUSDept,
+              method = "kendall",use="complete.obs")
+corPolity2PetroState <- cor(pD$Polity2Dest,pD$polity2PetroState,
+              method = "kendall",use="complete.obs")
+corReserves <- cor(pD$Polity2Dest,pD$Reserves,
+              method = "kendall",use="complete.obs")
+corMilex <- cor(pD$Polity2Dest,pD$Milex,
+              method = "kendall",use="complete.obs")
+corForeignInvest <- cor(pD$Polity2Dest,pD$ForeignInvest,
+              method = "kendall",use="complete.obs")
+corPredEthnic <- cor(pD$Polity2Dest,pD$PredEthnic,
+              method = "kendall",use="complete.obs")
+corOilprice<- cor(pD$Polity2Dest,pD$OilPrice,
+              method = "kendall",use="complete.obs")
+corNOC <- cor(pD$Polity2Dest, pD$NOC, method = "kendall", use = "complete.obs")
+corIOCS <- cor(pD$Polity2Dest, pD$IOC, method = "kendall", use = "complete.obs")
+
+paste0("Milex: ",round(corMilex,2))
+paste0("controlNocs: ", round(corNOC, 2))
+paste0("controlIOCS: ", round(corIOCS, 2))
+paste0("Dependencia economica: ",round(corExpDepDest,2))
+paste0("Inversion Extranjera: ",round(corForeignInvest,2))
+paste0("Dependecia en Rentas: ",round(corOilRentsDep,2)) 
+paste0("Precios del petroleo: ", round(corOilprice,2))
+paste0("GDP per capita a precios constantes: ",round(corGDPpc2010,2))
+paste0("Regimen del petroestado: ",round(corPolity2PetroState,2))
+paste0("Diversidad etnica: ",round(corPredEthnic,2))
+paste0("Violencia Politica: ",round(corPolity2Dest,2))
+paste0("Reservas: ",round(corReserves,2))
+
+
+```
+
+> RESERVAS
+
+```{r Kendall10, include= TRUE}
+corOilRentsDep <- cor(pD$Reserves,pD$OilRentsDep,method = "kendall",use="complete.obs")
+corGDPpc2010 <- cor(pD$Reserves,pD$GDPpc2010,
+              method = "kendall",use="complete.obs")        
+corExpDepDest <- cor(pD$Reserves,pD$ExpDepDest,
+              method = "kendall",use="complete.obs")
+corPolity2Dest <- cor(pD$Reserves,pD$Polity2Dest,
+              method = "kendall",use="complete.obs")
+corPolity2PetroState <- cor(pD$Reserves,pD$polity2PetroState,
+              method = "kendall",use="complete.obs")
+corPTS <- cor(pD$Reserves,pD$PolTerrorUSDept,
+              method = "kendall",use="complete.obs")
+corMilex <- cor(pD$Reserves,pD$Milex,
+              method = "kendall",use="complete.obs")
+corForeignInvest <- cor(pD$Reserves,pD$ForeignInvest,
+              method = "kendall",use="complete.obs")
+corPredEthnic <- cor(pD$Reserves,pD$PredEthnic,
+              method = "kendall",use="complete.obs")
+corOilprice<- cor(pD$Reserves,pD$OilPrice,
+              method = "kendall",use="complete.obs")
+corNOC <- cor(pD$Reserves, pD$NOC, method = "kendall", use = "complete.obs")
+corIOCS <- cor(pD$Reserves, pD$IOC, method = "kendall", use = "complete.obs")
+
+paste0("controlIOCS: ", round(corIOCS, 2))
+paste0("controlNocs: ", round(corNOC, 2))
+paste0("GDP per capita a precios constantes: ",round(corGDPpc2010,2))
+paste0("Inversion Extranjera: ",round(corForeignInvest,2))
+paste0("Milex: ",round(corMilex,2))
+paste0("Dependencia economica: ",round(corExpDepDest,2))
+paste0("Dependecia en Rentas: ",round(corOilRentsDep,2)) 
+paste0("Regimen del petroestado: ",round(corPolity2PetroState,2))
+paste0("Regimen de los destinos economicos: ",round(corPolity2Dest,2))
+paste0("Diversidad etnica: ",round(corPredEthnic,2))
+paste0("Violencia Politica: ",round(corPTS,2))
+paste0("Precios del petroleo: ", round(corOilprice,2))
+
+
+```
+
+> PRECIOS DEL PETROLEO 
+
+```{r Kendall11, include= TRUE}
+corOilRentsDep <- cor(pD$OilPrice,pD$OilRentsDep,method = "kendall",use="complete.obs")
+corGDPpc2010 <- cor(pD$OilPrice,pD$GDPpc2010,
+              method = "kendall",use="complete.obs")        
+corExpDepDest <- cor(pD$OilPrice,pD$ExpDepDest,
+              method = "kendall",use="complete.obs")
+corPolity2Dest <- cor(pD$OilPrice,pD$Polity2Dest,
+              method = "kendall",use="complete.obs")
+corPolity2PetroState <- cor(pD$OilPrice,pD$polity2PetroState,
+              method = "kendall",use="complete.obs")
+corReserves <- cor(pD$OilPrice,pD$Reserves,
+              method = "kendall",use="complete.obs")
+corMilex <- cor(pD$OilPrice,pD$Milex,
+              method = "kendall",use="complete.obs")
+corForeignInvest <- cor(pD$OilPrice,pD$ForeignInvest,
+              method = "kendall",use="complete.obs")
+corPredEthnic <- cor(pD$OilPrice,pD$PredEthnic,
+              method = "kendall",use="complete.obs")
+corOilprice<- cor(pD$OilPrice,pD$PolTerrorUSDept,
+              method = "kendall",use="complete.obs")
+corNOC <- cor(pD$OilPrice, pD$NOC, method = "kendall", use = "complete.obs")
+corIOCS <- cor(pD$OilPrice, pD$IOC, method = "kendall", use = "complete.obs")
+
+paste0("Regimen de los destinos economicos: ",round(corPolity2Dest,2))
+paste0("Dependencia economica: ",round(corExpDepDest,2))
+paste0("Dependecia en Rentas: ",round(corOilRentsDep,2)) 
+paste0("GDP per capita a precios constantes: ",round(corGDPpc2010,2))
+paste0("Regimen del petroestado: ",round(corPolity2PetroState,2))
+paste0("Diversidad etnica: ",round(corPredEthnic,2))
+paste0("Milex: ",round(corMilex,2))
+paste0("Reservas: ",round(corReserves,2))
+paste0("Violencia Politica: ", round(corOilprice,2))
+paste0("Inversion Extranjera: ",round(corForeignInvest,2))
+paste0("controlIOCS: ", round(corIOCS, 2))
+paste0("controlNocs: ", round(corNOC, 2))
+
+```
+
+> INTERNATIONAL OIL COMPANIES (datos muy incompletos)
+
+```{r Kendall12, include= TRUE}
+corOilRentsDep <- cor(pD$IOC,pD$OilRentsDep,method = "kendall",use="complete.obs")
+corGDPpc2010 <- cor(pD$IOC,pD$GDPpc2010,
+              method = "kendall",use="complete.obs")        
+corExpDepDest <- cor(pD$IOC,pD$ExpDepDest,
+              method = "kendall",use="complete.obs")
+corPolity2Dest <- cor(pD$IOC,pD$Polity2Dest,
+              method = "kendall",use="complete.obs")
+corPolity2PetroState <- cor(pD$IOC,pD$polity2PetroState,
+              method = "kendall",use="complete.obs")
+corReserves <- cor(pD$IOC,pD$Reserves,
+              method = "kendall",use="complete.obs")
+corMilex <- cor(pD$IOC,pD$Milex,
+              method = "kendall",use="complete.obs")
+corForeignInvest <- cor(pD$IOC,pD$ForeignInvest,
+              method = "kendall",use="complete.obs")
+corPredEthnic <- cor(pD$IOC,pD$PredEthnic,
+              method = "kendall",use="complete.obs")
+corOilprice<- cor(pD$IOC,pD$OilPrice,
+              method = "kendall",use="complete.obs")
+corNOC <- cor(pD$IOC, pD$NOC, method = "kendall", use = "complete.obs")
+corPTS <- cor(pD$IOC, pD$PolTerrorUSDept, method = "kendall", use = "complete.obs")
+
+paste0("controlNocs: ", round(corNOC, 2))
+paste0("Reservas: ",round(corReserves,2))
+paste0("Dependencia economica: ",round(corExpDepDest,2))
+paste0("Regimen de los destinos economicos: ",round(corPolity2Dest,2))
+paste0("Diversidad etnica: ",round(corPredEthnic,2))
+paste0("Regimen del petroestado: ",round(corPolity2PetroState,2))
+paste0("Milex: ",round(corMilex,2))
+paste0("Dependecia en Rentas: ",round(corOilRentsDep,2)) 
+paste0("Inversion Extranjera: ",round(corForeignInvest,2))
+paste0("GDP per capita a precios constantes: ",round(corGDPpc2010,2))
+paste0("Precios del petroleo: ", round(corOilprice,2))
+paste0("Violencia Politica: ", round(corPTS, 2))
+
+```
+
+> NATIONAL OIL COMPANIES (datos muy incompletos)
+
+```{r Kendall13, include= TRUE}
+corOilRentsDep <- cor(pD$NOC,pD$OilRentsDep,method = "kendall",use="complete.obs")
+corGDPpc2010 <- cor(pD$NOC,pD$GDPpc2010,
+              method = "kendall",use="complete.obs")        
+corExpDepDest <- cor(pD$NOC,pD$ExpDepDest,
+              method = "kendall",use="complete.obs")
+corPolity2Dest <- cor(pD$NOC,pD$Polity2Dest,
+              method = "kendall",use="complete.obs")
+corPolity2PetroState <- cor(pD$NOC,pD$polity2PetroState,
+              method = "kendall",use="complete.obs")
+corReserves <- cor(pD$NOC,pD$Reserves,
+              method = "kendall",use="complete.obs")
+corMilex <- cor(pD$NOC,pD$Milex,
+              method = "kendall",use="complete.obs")
+corForeignInvest <- cor(pD$NOC,pD$ForeignInvest,
+              method = "kendall",use="complete.obs")
+corPredEthnic <- cor(pD$NOC,pD$PredEthnic,
+              method = "kendall",use="complete.obs")
+corOilprice<- cor(pD$NOC,pD$OilPrice,
+              method = "kendall",use="complete.obs")
+corPTS <- cor(pD$NOC, pD$PolTerrorUSDept, method = "kendall", use = "complete.obs")
+corIOCS <- cor(pD$NOC, pD$IOC, method = "kendall", use = "complete.obs")
+
+paste0("controlIOCS: ", round(corIOCS, 2))
+paste0("Reservas: ",round(corReserves,2))
+paste0("Dependencia economica: ",round(corExpDepDest,2))
+paste0("GDP per capita a precios constantes: ",round(corGDPpc2010,2))
+paste0("Diversidad etnica: ",round(corPredEthnic,2))
+paste0("Regimen de los destinos economicos: ",round(corPolity2Dest,2))
+paste0("Regimen del petroestado: ",round(corPolity2PetroState,2))
+paste0("Violencia Politica: ", round(corPTS, 2))
+paste0("Dependecia en Rentas: ",round(corOilRentsDep,2)) 
+paste0("Inversion Extranjera: ",round(corForeignInvest,2))
+paste0("Precios del petroleo: ", round(corOilprice,2))
+paste0("Milex: ",round(corMilex,2))
+
+
+```
+
+> Corrupcion
+
+```{r Kendall14, include= TRUE}
+corOilRentsDep <- cor(pD$CPI,pD$OilRentsDep,method = "kendall",use="complete.obs")
+corGDPpc2010 <- cor(pD$CPI,pD$GDPpc2010,
+              method = "kendall",use="complete.obs")        
+corExpDepDest <- cor(pD$CPI,pD$ExpDepDest,
+              method = "kendall",use="complete.obs")
+corPolity2Dest <- cor(pD$CPI,pD$Polity2Dest,
+              method = "kendall",use="complete.obs")
+corPolity2PetroState <- cor(pD$CPI,pD$polity2PetroState,
+              method = "kendall",use="complete.obs")
+corReserves <- cor(pD$CPI,pD$Reserves,
+              method = "kendall",use="complete.obs")
+corMilex <- cor(pD$CPI,pD$Milex,
+              method = "kendall",use="complete.obs")
+corForeignInvest <- cor(pD$CPI,pD$ForeignInvest,
+              method = "kendall",use="complete.obs")
+corPredEthnic <- cor(pD$CPI,pD$PredEthnic,
+              method = "kendall",use="complete.obs")
+corOilprice<- cor(pD$CPI,pD$OilPrice,
+              method = "kendall",use="complete.obs")
+corNOC <- cor(pD$CPI, pD$NOC, method = "kendall", use = "complete.obs")
+corIOCS <- cor(pD$CPI, pD$IOC, method = "kendall", use = "complete.obs")
+corPTS <- cor(pD$CPI, pD$PolTerrorUSDept, method = "kendall", use = "complete.obs")
+
+paste0("GDP per capita a precios constantes: ",round(corGDPpc2010,2))
+paste0("controlIOCS: ", round(corIOCS, 2))
+paste0("controlNocs: ", round(corNOC, 2))
+paste0("Dependencia economica: ",round(corExpDepDest,2))
+paste0("Reservas: ",round(corReserves,2))
+paste0("Dependecia en Rentas: ",round(corOilRentsDep,2)) 
+paste0("Diversidad etnica: ",round(corPredEthnic,2))
+paste0("Inversion Extranjera: ",round(corForeignInvest,2))
+paste0("Milex: ",round(corMilex,2))
+paste0("Regimen de los destinos economicos: ",round(corPolity2Dest,2))
+paste0("Precios del petroleo: ", round(corOilprice,2))
+paste0("Violencia Politica: ", round(corPTS, 2))
+paste0("Regimen del petroestado: ",round(corPolity2PetroState,2))
+
+```
+
+##VISUALIZACIONES 
+
+####VIOLENCIA POLITICA
+
+
+### GDP per capita VS Violencia politica
+
+```{r}
+ggplot(pD, aes(x = GDPpc2010, y = PolTerrorUSDept, color=RegimenPetroState)) + geom_point() + facet_wrap(~ Year) 
+```
+
+####Regimen Poltico Vs Violencia Politica 
+
+```{r}
+pD %>%
+filter(is.na(RegimenPetroState)==FALSE)%>%
+  ggplot(aes(x=RegimenPetroState, y=PolTerrorUSDept)) +
+  geom_boxplot(colour="black",fill="plum",alpha=0.8) +
+  coord_flip() +
+  theme_fivethirtyeight()
+```
+
+
+```{r helpers}
+
+my_palette <- c("#EED87C", # Top priority
+                "#E0DCAA", # Demand great attention
+                "#ADCAAB", # Demand attention
+                "#7CB0B1", # Insufficient
+                "#3592B4")
+
+```
+
+####Regimen Poltico Vs Violencia Politica 
+```{r}
+stacked4<-ggplot(pD, aes(factor(RegimenPetroState)))
+stacked4 + geom_bar(aes(fill = factor(PolTerrorUSDept)))+ scale_fill_manual(values = my_palette)
+```
+
+
+####Quien predomina en la produccion de petroelo VS violencia politica
+
+```{r}
+stacked6<-ggplot(pD, aes(factor(WOP)))
+stacked6 + geom_bar(aes(fill = factor(PolTerrorUSDept)))+ scale_fill_manual(values = my_palette)
+```
+####Quien predomina en la produccion de petroelo VS Violencia politica 
+
+
+```{r}
+ggplot(pD, aes(x=WOP, y=PolTerrorUSDept))  +
+  geom_boxplot(colour="black",fill="plum",alpha=0.8) +
+  coord_flip() +
+  theme_fivethirtyeight() +
+  scale_y_continuous(breaks = seq(0,1300,200))
+```
+
+####Quien predomina en la produccion de petroelo VS Porcetanje de dependencia economica 
+
+ 
+```{r}
+ggplot(pD, aes(x=WOP, y=ExpDepDest))  +
+  geom_boxplot(colour="black",fill="plum",alpha=0.8) +
+  coord_flip() +
+  theme_fivethirtyeight() 
+  
+```
+
+####socio mayoritario Vs Violencia Politica 
+```{r}
+ggplot(pD, aes(x=Destination, y=PolTerrorUSDept)) + geom_boxplot(colour="black",fill="plum",alpha=0.8)+ coord_flip() +
+  theme_fivethirtyeight() 
+```
+####socio mayoritario Vs Violencia Politica 
+```{r}
+stacked5<-ggplot(pD, aes(factor(Destination)))
+stacked5 + geom_bar(aes(fill = factor(PolTerrorUSDept)))+ scale_fill_manual(values = my_palette)
+```
+####Gastos militares Vs regimen politico  
+
+```{r}
+ggplot(pD, aes(x=GDPpc2010, y=Milex, color=RegimenPetroState)) + geom_point()+ facet_wrap(~ Year)
+```
+
+
+
+
