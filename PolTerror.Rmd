@@ -1,0 +1,133 @@
+m---
+title: 'Violencia Politica en petro-Estados'
+author: "Laura Jimenez Ruiz"
+date: "Abril 27, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE,fig.align = "center")
+Sys.setlocale("LC_ALL", "en_US.UTF-8")
+
+```
+
+```{r data,include=FALSE}
+
+ptL <- read.csv("Data/pDa.csv",sep = ";",na.strings = c(""))
+
+ptL <- ptL[,-c(7:9,11:13,16,18,20,22:26,28:31)]
+
+#Removing Egipt
+
+ptL <- ptL[ptL$Country!="Egypt, Arab Rep.",]
+
+library(plyr)
+ptL <- rename(ptL, c("ExpDepDest" = "ExpoDep"))
+ptL <- rename(ptL,c("RegimenPetroState" = "Reg"))
+ptL <- rename(ptL,c("GDPpc2010" = "GDP"))
+ptL <- rename(ptL,c("RegDestination" = "RegDest"))
+        
+#Binomial 
+
+ptL$PolTerrorUSDept <- as.numeric(revalue(as.character(ptL$PolTerrorUSDept), c("1" = "0",
+                                                                             "2" = "0",
+                                                                             "3" = "0",
+                                                                             "4" = "1",
+                                                                             "5" = "1")))
+
+ptL$Reg <- revalue(ptL$Reg,c("Autocracy" = "AU","Closed Anocracy" = "CAN",
+                                                 "Democracy" = "D","Open Anocracy" = "OAN"))
+
+ptL$RegDest <- revalue(ptL$RegDest,c("  Autocracy  " = "AU","  Democracy  " = "D"))
+
+```
+
+
+
+# {.tabset}
+
+***
+
+## Logit 0: Time Effect
+
+***
+
+```{r}
+modA0 <- glm(formula=PolTerrorUSDept~GDP+Year+Year:GDP,
+           data=ptL,family = binomial)
+
+summary(modA0)
+
+plot(effects::allEffects(mod = modA0))
+
+```
+
+## Logit 1
+
+***
+
+### GDP + Regimen (petro-Estado), sin efectos cruzados
+
+***
+
+```{r}
+modA1 <- glm(formula=PolTerrorUSDept~GDP+Reg, data=ptL,family = binomial)
+
+summary(modA1)
+
+plot(effects::allEffects(mod = modA1))
+
+```
+
+***
+
+### GDP * Regimen (petro-Estado), efectos cruzados
+
+***
+
+```{r}
+modA1b <- glm(formula=PolTerrorUSDept~Reg:GDP,
+           data=ptL,family = binomial)
+
+summary(modA1b)
+
+plot(effects::allEffects(mod = modA1b))
+
+```
+
+***
+
+## Logit 2
+
+***
+
+### GDP + Regimen (petro-Estado) + Corrupcion; Efecto cruzado: Corrupcion vs. Regimen (petro-Estado)
+
+***
+
+```{r}
+modA2 <- glm(formula=PolTerrorUSDept~GDP+Reg+CPI:Reg,
+             data=ptL,family = binomial)
+
+summary(modA2)
+
+plot(effects::allEffects(mod = modA2))
+```
+
+#### The best one so far
+
+```{r}
+
+modA2c <- glm(formula=PolTerrorUSDept~GDP+Reg+CPI:GDP+Milex:GDP,
+             data=ptL,family = binomial)
+
+summary(modA2c)
+
+plot(effects::allEffects(mod = modA2c))
+```
+
+
+
+
+
+
